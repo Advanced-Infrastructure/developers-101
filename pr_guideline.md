@@ -5,6 +5,7 @@
 - [Don't request a review until tests have passed](#dont-request-review-until-tests-passed)
 - [Keep pull requests small](#keep-prs-small)
 - [Write commit subjects in the imperative mood](#imperative-commit-subjects)
+- [Give descriptive name and info to Pull Request](#pr-name-rule)
 - [Do only one thing with each commit](#do-only-one-thing-with-each-commit)
 - [Don't mix refactoring with functional changes in the same commit](#dont-mix-refactoring-with-functional-changes)
 - [Make each commit atomic](#atomic-commits)
@@ -86,6 +87,16 @@ Write imperative commit subjects, e.g. "Fix bug" rather than "Fixed bug" or
 commands like `git merge` and `git revert`.
 
 Tip: if you've done it correctly, the commit subject will complete the sentence, "If merged, this commit will..."
+
+## <a name="pr-name-rule">Give descriptive name and info to Pull Request</a>
+
+Add a proper name to the Pull Request. The name should be descriptive and should give a clear idea of what the PR is about.
+
+Additionally add the Jira ticket ID in the PR title or description. This helps in tracking the PRs and also helps in
+understanding the context of the PR.
+
+Best practice is to include Environment name in the PR title if the PR is related to a specific environment. Plus the Jira ticket id followed by description.
+For example: `PROD: [Jira_ID] Brief description of change` or `SIT: [Jira_ID] Brief description of change`
 
 ## <a name="do-only-one-thing-with-each-commit">Do only one thing with each commit</a>
 

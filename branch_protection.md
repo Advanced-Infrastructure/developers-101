@@ -11,6 +11,7 @@
 - **Platform Team**: Use `/story/<story_id>` or `/bug/<bug_id>`
 - **Data Team**: Use `/DAT-<story_id>`
 - `<story_id>` and `<bug_id>` correspond to Jira tickets.
+- For branches which are from SIT or PROD (as quick fix) use `/story/sit/<story_id>` or `bug/prod/<story_id>` i.e. include the environment name in the branch name.
 
 ## 2. Pull Request (PR) Guidelines
 
