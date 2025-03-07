@@ -1,0 +1,5 @@
+# Minimal Jekyll config (works with GitHub Pages)
+theme: jekyll-theme-primer
+title: Advanced Infrastructure Developer Guidelines
+description: Development guidelines 
+nav_order: 1
