@@ -4,39 +4,7 @@ Writing clear and comprehensive OpenAPI documentation is critical for developer 
 
 ---
 
-## 1. Versioning
-
-Versioning ensures backward compatibility and smooth transitions for API consumers.
-
-### Best Practices:
-- **Use URI Versioning**: Embed the version in the URL path (e.g., `/v1/users`). This is explicit and easy to understand.
-  
-  ```yaml
-  paths:
-    /v1/users:
-      get:
-        summary: Get all users
-  ```
-  
-- **Follow Semantic Versioning (SemVer)**: Use `major.minor.patch` to signal breaking changes (e.g., `v1`, `v2`).
-- **Deprecate Gracefully**:
-  - Add a `Deprecation` header to outdated endpoints.
-  - Use the `Sunset` header to indicate retirement dates.
-
-  ```yaml
-  responses:
-    200:
-      headers:
-        Deprecation:
-          description: "This endpoint will be deprecated on 2024-01-01."
-        Sunset:
-          description: "Wed, 01 Jan 2025 00:00:00 GMT"
-  ```
-- **Document Version Changes**: Maintain a changelog or include release notes in your docs.
-
----
-
-## 2. Model Management
+## 1. Model Management
 
 Models (schemas) define the structure of request/response data. Consistency here reduces confusion.
 
@@ -82,7 +50,7 @@ Models (schemas) define the structure of request/response data. Consistency here
 
 ---
 
-## 3. Endpoint Documentation
+## 2. Endpoint Documentation
 
 Clear endpoint docs help developers integrate quickly.
 
