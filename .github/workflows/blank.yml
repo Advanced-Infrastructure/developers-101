@@ -1,0 +1,16 @@
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v3
+      - run: echo "Built at $(date)" > docs/_site/index.html
+      - uses: actions/upload-pages-artifact@v2
+        with:
+          path: docs/_site
+      - name: Deploy
+        uses: actions/deploy-pages@v2
