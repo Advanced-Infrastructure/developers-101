@@ -126,6 +126,20 @@ Clear endpoint docs help developers integrate quickly.
 
 ---
 
+## Where do I add documentation?
+Good question, cowboy. We use serverless.yml to manage API declarations and deployments to APIGateway. So, it made sense to add a block for endpoint documentation.
+
+All documentation is added in the `docs` folder. The yaml file follows the OpenAPI standards. Read about OpenAPI spec here [openAPI](https://github.com/OAI/OpenAPI-Specification)
+
+Next, edit serverless open `serverless.yml` in `be-api-test` [serverless](https://github.com/Advanced-Infrastructure/be-api-test/blob/dev/serverless.yml)
+Under functions, see the documentation block `documentation: ${file(./docs/api/documentation.yml):endpoints.api-endpoint}`
+
+Make sure you declare the documentation block for every endpoint.
+
+
+---
+
+
 ## Final Tips
 - **Validate Your Spec**: Use tools like Swagger Editor or Spectral to lint your OpenAPI file.
 - **Automate Documentation**: Generate interactive docs with Swagger UI or Redoc.
