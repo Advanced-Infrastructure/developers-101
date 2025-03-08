@@ -25,7 +25,7 @@ to use for work and add your name to that.
 
 ## <a name="leave-in-draft">Leave pull requests in draft until they are potentially ready to merge</a>
 
-When first opening a pull request, use [GitHub’s ‘draft’ feature] to create it as a draft. This will prevent code owners
+When first opening a pull request, use [GitHub's 'draft' feature] to create it as a draft. This will prevent code owners
 from being tagged prematurely.
 
 Only once you feel it is potentially production-ready, mark it as 'ready for review'. This will then automatically tag
@@ -33,7 +33,7 @@ the code owners.
 
 If you want to get an early review while a pull request is still in draft, that's fine.
 
-[github’s ‘draft’ feature]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests
+[github's 'draft' feature]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests
 
 
 ## <a name="dont-request-review-until-tests-passed">Don't request a review until tests have passed</a>
@@ -141,12 +141,7 @@ Complex PRs can take a lot of time to review: if you need a fast turnaround, the
 
 ## <a name="acknowledge-comments">Acknowledge every review comment</a>
 
-Always respond to every comment to indicate to the reviewer that you’ve seen and thought about what they said. This
-doesn't have to be onerous: often a 👍 reaction is sufficient.
-
-## <a name="acknowledge-comments">Acknowledge every review comment</a>
-
-Always respond to every comment to indicate to the reviewer that you’ve seen and thought about what they said. This
+Always respond to every comment to indicate to the reviewer that you've seen and thought about what they said. This
 doesn't have to be onerous: often a 👍 reaction is sufficient.
 
 ## <a name="make-clear-what-has-changed-since-last-review">When re-requesting reviews, make it clear what has changed</a>

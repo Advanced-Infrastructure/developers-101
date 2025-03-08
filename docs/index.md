@@ -2,8 +2,7 @@
 
 ```markdown
 ## Git Principles
-- [Branch Protection](/branch_standards.md)
-- [API Guidelines](/api-guidelines.md)
+- [Branch Protection](/branch_protection.md)
 - [Review Process](/pr_guideline.md)
 
 ## Quick Links

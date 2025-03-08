@@ -19,7 +19,7 @@
 - All PRs must have a clear description explaining the changes.
 - Reference the Jira ticket ID in the PR title or description.
 - Follow the coding standards of the project.
-- PRs should be small and focused. Read more about writing effective PRs [here] ('./pr_guideline.md')
+- PRs should be small and focused. Read more about writing effective PRs [here](./pr_guideline.md)
 - PRs should have appropriate labels for tracking purposes.
 
 ### 2.2 Code Review Process
