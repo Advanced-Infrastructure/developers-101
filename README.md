@@ -25,6 +25,7 @@ Our comprehensive documentation is available at:
 
 - [Branch Protection Guidelines](./branch_protection.md)
 - [Pull Request Guidelines](./pr_guideline.md)
+- [API documentation Guidelines](./api_documentation.md)
 
 ## 💻 Getting Started
 
@@ -46,6 +47,6 @@ We welcome contributions! If you have suggestions for improving these guidelines
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
----
+
 
 <p align="center">Made with ❤️ for developers who care about code quality</p>
