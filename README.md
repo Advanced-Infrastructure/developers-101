@@ -20,12 +20,15 @@ Our comprehensive documentation is available at:
 - **PR Guidelines**: Learn how to create effective PRs that are easy to review
 - **Team Conventions**: Team-specific naming conventions and workflows
 - **GitHub Automation**: CI/CD setup and branch protection rules
+- **Ruff Setup**: Ruff setup as common linter and formatter
+
 
 ## 🗂️ What's Inside
 
 - [Branch Protection Guidelines](./branch_protection.md)
 - [Pull Request Guidelines](./pr_guideline.md)
 - [API documentation Guidelines](./api_documentation.md)
+- [Setting Up Ruff As Standard Linter And Formatter](./enforcing_ruff.md)
 
 ## 💻 Getting Started
 
