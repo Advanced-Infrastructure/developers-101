@@ -136,6 +136,8 @@ Under functions, see the documentation block `documentation: ${file(./docs/api/d
 
 Make sure you declare the documentation block for every endpoint.
 
+Documentation location is stored in a S3 bucket called "be-openapi-doc-generator". Please use `{{vars.OPENAPI_DOCUMENATION_BUCKET}}` in your workflows to access this bucket
+
 
 ---
 
