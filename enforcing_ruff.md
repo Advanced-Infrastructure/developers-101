@@ -13,12 +13,6 @@ You can install Ruff using `pip` or by adding it to your `requirements.txt` file
 pip install ruff
 ```
 
-Or, add the following line to `requirements.txt`:
-
-```
-ruff==0.9.2
-```
-
 ### 2. Add `.ruff_cache` to `.gitignore`
 The `.ruff_cache` directory stores cache files related to Ruff. To avoid committing unnecessary files, add the following line to your `.gitignore`:
 
@@ -30,27 +24,105 @@ The `.ruff_cache` directory stores cache files related to Ruff. To avoid committ
 Create a `ruff.toml` file in the root of your project and add the following configuration:
 
 ```toml
-# Target Python version
-[tool.ruff]
-target-version = "py313"
+# find default setting at: https://docs.astral.sh/ruff/configuration/
 
-# Enable additional linting rules
-[lint]
-extend-select = [
-    "UP",  # pyupgrade
-    "I",   # isort
-    "C90", # complexity
-    "N",   # pep8-naming
-    "ASYNC", # flake8-async
-    "S",   # flake8-bandit
-    "B",   # flake8-bugbear
-    "A",   # flake8-builtins
-    "C4",  # flake8-comprehensions
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "test",
+    "tests",
+    "scripts",
+    "test_flow",
+    "common_utils",
+    "common-utils",
+    "infra_access",
+    "ogr2ogr.py",
 ]
 
-# Ignore specific rules for test files
-[lint.per-file-ignores]
-"tests/*.py" = ["S101"]  # Ignore assert statements in tests
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.13
+target-version = "py313"
+
+[lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F"]
+extend-select = [
+    "UP",  # pyupgrade
+    "I", # isort
+    "N", # pep8-naming
+    "ASYNC", # flake8-async
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "PTH", # flake8-use-pathlib
+    "DTZ", # flake8-datetimez
+]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
 ```
 
 Refer to the following links for more details on Ruff rules and settings:
@@ -63,16 +135,22 @@ Once Ruff is installed and configured, run the following commands to check and f
 
 ```sh
 # Check for linting errors
-ruff check
+ruff check .
 
 # Automatically fix fixable errors
-ruff check --fix
+ruff check . --fix
+
+# check for a specific rule (say B: https://docs.astral.sh/ruff/rules/#flake8-bugbear-b)
+ruff check . --select="B"
+
+# add a no quality assesment check flag to a line (use only if unavoidable)
+# use only for a specific file and a specific rule
+ruff check insert/file/path/ --select="B002" --add-noqa
 
 # Format code according to standards
 ruff format
 ```
 
-> **ℹ️ Info:** The pre-commit step is WIP. Please don't follow it yet.
 ### 5. Enforce Ruff in Pre-Commit Hooks
 To prevent committing unformatted or non-linted code, integrate Ruff with `pre-commit`.
 
@@ -89,12 +167,16 @@ pip install pre-commit
 Add the following configuration to your `.pre-commit-config.yaml` file:
 
 ```yaml
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.4
-  hooks:
-    - id: ruff
-      args: [ --fix ]
-    - id: ruff-format
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.12.7
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+      # Run the formatter.
+      - id: ruff-format
+        args: [--check]
 ```
 
 #### Install Pre-Commit Hooks
@@ -106,22 +188,12 @@ pre-commit install
 ```
 
 ### 6. Handling Pre-Commit Failures
-If Ruff detects issues during a commit, it will prevent the commit until the issues are fixed. Follow these steps to resolve the errors:
+If pre-commit detects that ruff check and ruff format are not done during a commit, it will prevent the commit until the issues are fixed. Fix the ruff linting and formatting violations and try committing again.
 
-1. Review the errors printed by Ruff.
-2. Run `ruff check --fix` to auto-fix issues.
-3. Run `ruff format` to format the code.
-4. Add the modified files to staging:
-
-   ```sh
-   git add .
-   ```
-
-5. Retry committing:
-
-   ```sh
-   git commit -m "Fix linting issues"
-   ```
+You can check check if all pre-commit hooks are satisfied even before making the commit by running:
+```sh
+pre-commit run
+```
 
 ### 7. Integrate Ruff in IDEs
 To ensure code is formatted properly while writing, install the Ruff extension in your IDE:
