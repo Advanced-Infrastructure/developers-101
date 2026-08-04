@@ -31,7 +31,20 @@
 
 ## 3. Additional GitHub Etiquette
 
-- **Commit Messages**: Use meaningful commit messages following the format: `[Jira_ID] Brief description of change`
+- **Commit Messages**: Use meaningful commit messages following the format: `<type> (file/api/controller/keyword): short description (<Jira_ID>)`, **type** here refers to:
+    - **fix**: use when you are fixing a bug or error in the code
+      - ex - linting errors, or bug fix like missing edge case handling
+      - message would look like: `fix (api_utils - linting): fixed linting error - sorted the imports (LM-0000)`
+    - **update**: use when you are updating an existing feature/logic or extending the functionality
+      - ex - you added json file handling in export function
+      - message would look like: `update (/export - json files): added logic to export json files by converting csv files to json (LM-0000)`
+    - **hotfix**: use when you are pushing a patch work (generally p1/p2 issues), though not a full fledged solution but will unblock the user
+      - ex: user not able to view portfolio because the underlying data type is different
+      - message would look like: `hotfix (get portfolio - datatype): converted str type col total-buildings to int (AI-0000)`
+    - **feature**: use when you are adding new functionality
+      - ex - added notification feature when the export files are ready
+      - message would look like: `feature (/export - notification): added notification feature when export files are ready for download (LM-0000)`
+
 - **Rebasing**: Keep your branch updated with `dev` by regularly rebasing.
 - **Merging**: Use squash and merge to keep a clean commit history.
 - **Conflict Resolution**: Ensure conflicts are resolved before requesting a review.
