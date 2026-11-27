@@ -5,23 +5,25 @@ come from and where PRs go are covered in [Branching and Promotion](./branch_pro
 
 ## The rules at a glance
 
-Follow these on every PR into `dev`, `sit`, `pre-prod` or `master`. They're being rolled out as
-an automatic check (see [How the rules are checked](#how-the-rules-are-checked)).
+Follow these on every PR into `dev`, `sit`, a pre-prod branch or `master`. They're being rolled
+out as an automatic check (see [How the rules are checked](#how-the-rules-are-checked)).
 
 | What | Rule | Example |
 | --- | --- | --- |
 | Branch | `story/<TICKET>`, `bug/<TICKET>` or `hotfix/<TICKET>`, cut from the latest `master` | `story/LM-12345` |
-| PR target | Your PR goes into `dev`. Automation raises the PRs into `sit` and beyond | `story/LM-12345` → `dev` |
+| PR target | Your PR goes into `dev`. Automation takes the change to `sit` and pre-prod | `story/LM-12345` → `dev` |
 | PR title | `<TICKET>: <summary>`, same ticket as the branch, no environment prefix | `LM-12345: Add export filter for datasets` |
 | PR description | Jira link, what changed and why, how it was tested, impact | See the [template](#pr-description) |
 | Commit message | `<TICKET>: <imperative summary>` | `LM-12345: Fix null region in cost query` |
 | Branch history | Only this ticket's commits on top of `master`. Nothing from `dev`, `sit` or another ticket | |
+| Merging into `dev` | **Squash and merge**, then add the squash commit to the ticket's Deployment Instructions (for now) | See [Merging into dev](#merging-into-dev) |
 
 - [Write commits as `<TICKET>: <imperative summary>`](#commit-messages)
 - [Do only one thing with each commit](#do-only-one-thing-with-each-commit)
 - [Don't mix refactoring with functional changes in the same commit](#dont-mix-refactoring-with-functional-changes)
 - [Make each commit atomic](#atomic-commits)
 - [Title and describe the PR properly](#pr-name-rule)
+- [Squash and merge into dev](#merging-into-dev)
 - [Keep pull requests small](#keep-prs-small)
 - [Leave pull requests in draft until they are potentially ready to merge](#leave-in-draft)
 - [Don't request a review until tests have passed](#dont-request-review-until-tests-passed)
@@ -92,6 +94,22 @@ Database changes or migrations, config or environment variables, deployment step
 other services affected. "None" is a valid answer.
 ```
 
+### <a name="merging-into-dev"></a>Squash and merge into dev
+
+Merge PRs into `dev` with **Squash and merge**, so each PR lands as a single commit. Keep the
+suggested commit title: it's the PR title, so it already reads `<TICKET>: <summary>`. PRs from a
+sub-branch into its ticket branch (e.g. `story/LM-12345-api` → `story/LM-12345`) keep normal
+merge commits.
+
+> ⚠️ **Temporary workaround.** For now, automation takes your change to `sit`, and to pre-prod for
+> production, by cherry-picking the commit(s) listed in the ticket's Deployment Instructions. After
+> testing on Dev, move the ticket to **Ready for SIT**, add the squash commit's URL to the
+> Deployment Instructions, then move it to **SIT-Release**: that's what the automation picks up.
+> The format and an example are in
+> [Branching and Promotion](./branch_protection.md#deployment-instructions-for-now).
+> The release automation pipeline is being changed to pick up the PRs itself. After that you won't
+> need to add the commit. All developers will be notified when it's live, and this page updated.
+
 ### <a name="keep-prs-small"></a>Keep pull requests small
 
 Big PRs are hard to review, attract endless comments, conflict more and are riskier to deploy.
@@ -134,9 +152,9 @@ Say what changed since the last review, so the reviewer doesn't reread everythin
 
 - **Before the branch has been merged into `dev`:** you may amend or fixup commits, but leave a
   PR comment listing what changed.
-- **Once any of its commits are in `dev`:** don't rewrite history (no rebase, amend or
-  force-push), because that causes duplicate commits and false conflicts on the next promotion.
-  Add new commits, and tell the reviewer which commit to review from.
+- **Once the branch has been merged into `dev`:** don't rewrite history (no rebase, amend or
+  force-push), because that causes duplicate commits and false conflicts on the next PR. Add new
+  commits, and tell the reviewer which commit to review from.
 
 ## <a name="ensure-you-can-be-identified"></a>Ensure you can be identified from your GitHub account
 
