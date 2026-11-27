@@ -25,7 +25,7 @@ Our comprehensive documentation is available at:
 
 ## 🗂️ What's Inside
 
-- [Branch Protection Guidelines](./branch_protection.md)
+- [Branching and Promotion (backend)](./branch_protection.md)
 - [Pull Request Guidelines](./pr_guideline.md)
 - [API documentation Guidelines](./api_documentation.md)
 - [Setting Up Ruff As Standard Linter And Formatter](./enforcing_ruff.md)
