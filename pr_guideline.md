@@ -1,171 +1,157 @@
 # Pull requests
 
-- [Ensure you can be identified from your Github account](#ensure-you-can-be-identified)
-- [Leave pull requests in draft until they are potentially ready to merge](#leave-in-draft)
-- [Don't request a review until tests have passed](#dont-request-review-until-tests-passed)
-- [Keep pull requests small](#keep-prs-small)
-- [Write commit subjects in the imperative mood](#imperative-commit-subjects)
-- [Give descriptive name and info to Pull Request](#pr-name-rule)
+How we write commits and pull requests in the backend (`be-*`) repositories. Where branches
+come from and where PRs go are covered in [Branching and Promotion](./branch_protection.md).
+
+## The rules at a glance
+
+Follow these on every PR into `dev`, `sit`, `pre-prod` or `master`. They're being rolled out as
+an automatic check (see [How the rules are checked](#how-the-rules-are-checked)).
+
+| What | Rule | Example |
+| --- | --- | --- |
+| Branch | `story/<TICKET>`, `bug/<TICKET>` or `hotfix/<TICKET>`, cut from the latest `master` | `story/LM-12345` |
+| PR target | Your PR goes into `dev`. Automation raises the PRs into `sit` and beyond | `story/LM-12345` → `dev` |
+| PR title | `<TICKET>: <summary>`, same ticket as the branch, no environment prefix | `LM-12345: Add export filter for datasets` |
+| PR description | Jira link, what changed and why, how it was tested, impact | See the [template](#pr-description) |
+| Commit message | `<TICKET>: <imperative summary>` | `LM-12345: Fix null region in cost query` |
+| Branch history | Only this ticket's commits on top of `master`. Nothing from `dev`, `sit` or another ticket | |
+
+- [Write commits as `<TICKET>: <imperative summary>`](#commit-messages)
 - [Do only one thing with each commit](#do-only-one-thing-with-each-commit)
 - [Don't mix refactoring with functional changes in the same commit](#dont-mix-refactoring-with-functional-changes)
 - [Make each commit atomic](#atomic-commits)
+- [Title and describe the PR properly](#pr-name-rule)
+- [Keep pull requests small](#keep-prs-small)
+- [Leave pull requests in draft until they are potentially ready to merge](#leave-in-draft)
+- [Don't request a review until tests have passed](#dont-request-review-until-tests-passed)
 - [Try not to surprise reviewers with urgent, complex pull requests](#dont-surprise-with-urgent-prs)
 - [Acknowledge every review comment](#acknowledge-comments)
 - [When re-requesting reviews, make it clear what has changed](#make-clear-what-has-changed-since-last-review)
+- [Ensure you can be identified from your GitHub account](#ensure-you-can-be-identified)
+- [How the rules are checked](#how-the-rules-are-checked)
 
+## Commits
 
-## <a name="ensure-you-can-be-identified">Ensure you can be identified from your Github account</a>
+### <a name="commit-messages"></a><a name="imperative-commit-subjects"></a>Write commits as `<TICKET>: <imperative summary>`
 
-Make sure that your full name is displayed on the GitHub account you use for developing. Without it, it
-can be difficult to map authors back to real people.
+Start every commit subject with the Jira key of the branch's ticket, a colon and a space, then
+a short summary in the imperative mood:
 
-If you're not comfortable having your full name on your personal GitHub profile, please create a separate GitHub profile
-to use for work and add your name to that.
+```text
+LM-12345: Add export filter for datasets        ✓
+LM-12345: Added export filter                   ✗ past tense
+Fixes export filter                             ✗ no ticket
+[LM-12345] add export filter / LM-12345 || ...  ✗ old formats
+```
 
+Imperative means "Fix bug", not "Fixed bug" or "Fixes bug". A good subject completes the
+sentence "If merged, this commit will…". This also matches the messages Git writes itself for
+`git merge` and `git revert`. Merge commits (e.g. merging `origin/master` into your branch)
+don't need the ticket prefix.
 
-## <a name="leave-in-draft">Leave pull requests in draft until they are potentially ready to merge</a>
+### <a name="do-only-one-thing-with-each-commit"></a>Do only one thing with each commit
 
-When first opening a pull request, use [GitHub's 'draft' feature] to create it as a draft. This will prevent code owners
-from being tagged prematurely.
+Express a single thought with each commit. That can be a very small commit (a typo fix) or a
+large one (moving many modules to another package). A reviewer should be able to hold the commit
+in their head. If you're writing "change this and that", split the commit.
 
-Only once you feel it is potentially production-ready, mark it as 'ready for review'. This will then automatically tag
-the code owners.
+### <a name="dont-mix-refactoring-with-functional-changes"></a>Don't mix refactoring with functional changes in the same commit
 
-If you want to get an early review while a pull request is still in draft, that's fine.
+Commits that both restructure code and change behaviour are hard to review. Put the refactoring
+in its own commit.
 
-[github's 'draft' feature]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests
+### <a name="atomic-commits"></a>Make each commit atomic
 
+After each commit the tests should pass and the code should be safe to deploy. Don't
+half-implement something in one commit and fix it in the next. To land a failing test before its
+fix, mark it `pytest.mark.xfail`.
 
-## <a name="dont-request-review-until-tests-passed">Don't request a review until tests have passed</a>
+## Pull requests
 
-By default, wait for the test suite to pass before asking for a review. One of main purposes of the tests (in particular, the
-linting) is to save a reviewer's time by picking up on issues that would otherwise be flagged by a human.
+### <a name="pr-name-rule"></a><a name="pr-description"></a>Title and describe the PR properly
 
-Sometimes unrelated tests '[flake]'. Run the Ruff workflow before requesting a review.
+**Title:** `<TICKET>: <summary>`, using the same ticket as the branch. Don't add `DEV:`, `SIT:`
+or `PROD:`: one branch goes to every environment, and the target branch already says which one.
 
-Install and configure:
-1. Configure and set up ruff locally with toml file (standard plus additional rule if needed).
-2. Configure and install pre-commit hook on local (steps to be shared by yogesh).
-3. Ensure ruff check and Precommit checks are passed before raising a PR.
+**Description:** use this template. Keep it short, but don't leave anything out.
 
-The only exceptions to requesting a review with failing tests should be when:
+```markdown
+## Jira
+https://aitl.atlassian.net/browse/LM-12345
 
-- There are failing tests on the master/main branch that are unrelated to your changes. Try to rebase your branch as soon these
-  are fixed, but it doesn't need to block a review.
-- You need the reviewer's help to fix the tests or provide early feedback that you're going in the right direction. In this case, make sure the pull request is still in draft, as it isn't
-  production ready.
+## What and why
+What this PR changes, and the reason for it.
 
-In either case, mention in your pull request description why there are failing tests.
+## How it was tested
+Local run (LocalStack, local DBs), unit and integration tests, SQL checked against the
+master/dev/SIT dumps where the database is touched.
 
+## Impact
+Database changes or migrations, config or environment variables, deployment steps,
+other services affected. "None" is a valid answer.
+```
 
+### <a name="keep-prs-small"></a>Keep pull requests small
 
-[flake]: https://tech.octopus.energy/news/2022/05/23/flakey-python-tests.html
-[rerun the circleci workflow from failed]: https://support.circleci.com/hc/en-us/articles/360050303671-How-To-Rerun-a-Workflow
+Big PRs are hard to review, attract endless comments, conflict more and are riskier to deploy.
+If a PR runs past a few hundred lines, split it, for example into separate tickets, or into
+sub-branches of the ticket branch (see [Branching and Promotion](./branch_protection.md)).
+It's never too late to break up a PR that has become hard to review.
 
-## <a name="keep-prs-small">Keep pull requests small</a>
+### <a name="leave-in-draft"></a>Leave pull requests in draft until they are potentially ready to merge
 
-Avoid big pull requests. They are:
+Open PRs as [drafts](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests)
+so the repository owner isn't tagged too early. Mark them "ready for review" once you believe
+they could go to production. Asking for early feedback on a draft is fine.
 
-- hard to review;
-- can get bogged down with too many comments;
-- more likely to incur git conflicts;
-- riskier to deploy.
+### <a name="dont-request-review-until-tests-passed"></a>Don't request a review until tests have passed
 
-There's no hard-and-fast rule as to what constitutes too big a pull request, but if it's running to more than a few
-hundred lines of code then it's probably worth breaking up. If there are dependencies from one
-PR to another, [chain them](#chain-prs). (If you've [made each commit atomic](#atomic-commits), this should
-be easy: you can just move later commits to another PR.)
+Before asking for a review:
 
-Don't apologise about a pull request being too big; break it up before seeking review. It is time well spent.
+- Run the unit and integration tests locally.
+- Run `ruff check` and the pre-commit hooks. Setup is in [Setting up Ruff](./enforcing_ruff.md).
+- Make sure CI and the PR guardrails check pass.
 
-It's never too late to break up a PR. If one becomes unexpectedly big or difficult during the review process, don't soldier on: it quickly becomes demoralizing for everyone. Instead, identify smaller parts, break them out into separate pull requests, and focus on getting them merged incrementally.
+Exceptions: failures that already exist on `master` and are unrelated to your change, or when you
+need the reviewer's help with the failure. In both cases keep the PR in draft if it isn't
+production-ready, and say why the tests fail in the description.
 
-## <a name="imperative-commit-subjects">Write commit subjects in the imperative mood</a>
+### <a name="dont-surprise-with-urgent-prs"></a>Try not to surprise reviewers with urgent, complex pull requests
 
-Write imperative commit subjects, e.g. "Fix bug" rather than "Fixed bug" or
-"Fixes bug." This convention matches up with commit messages generated by
-commands like `git merge` and `git revert`.
+If a time-sensitive PR is coming, tell the repository owner ahead of time. The more complex the
+change, the more notice they need.
 
-Tip: if you've done it correctly, the commit subject will complete the sentence, "If merged, this commit will..."
+## Reviews
 
-## <a name="pr-name-rule">Give descriptive name and info to Pull Request</a>
+### <a name="acknowledge-comments"></a>Acknowledge every review comment
 
-Add a proper name to the Pull Request. The name should be descriptive and should give a clear idea of what the PR is about.
+Respond to every comment so the reviewer knows you've seen it. Often a 👍 is enough.
 
-Additionally add the Jira ticket ID in the PR title or description. This helps in tracking the PRs and also helps in
-understanding the context of the PR.
+### <a name="make-clear-what-has-changed-since-last-review"></a>When re-requesting reviews, make it clear what has changed
 
-Best practice is to include Environment name in the PR title if the PR is related to a specific environment. Plus the Jira ticket id followed by description.
-For example: `PROD: [Jira_ID] Brief description of change` or `SIT: [Jira_ID] Brief description of change`
+Say what changed since the last review, so the reviewer doesn't reread everything:
 
-## <a name="do-only-one-thing-with-each-commit">Do only one thing with each commit</a>
+- **Before the branch has been merged into `dev`:** you may amend or fixup commits, but leave a
+  PR comment listing what changed.
+- **Once any of its commits are in `dev`:** don't rewrite history (no rebase, amend or
+  force-push), because that causes duplicate commits and false conflicts on the next promotion.
+  Add new commits, and tell the reviewer which commit to review from.
 
-Express a single thought with each commit. This can result in very small commits
-(e.g. fixing a typo) or quite large ones (e.g. moving many modules to
-different package). The point is that a reviewer should be able to hold the commit
-in their head without too much trouble.
+## <a name="ensure-you-can-be-identified"></a>Ensure you can be identified from your GitHub account
 
-What constitutes 'a single thought' is a judgement call. You may choose to add
-several interdependent Django models in a single commit, as it makes sense to be
-reviewed as a single thing: in this case, the data model. You may choose to
-use one commit to add type annotations for an entire module, because it is
-ultimately driven by one thought. The golden rule is that it should make the life
-of the reviewer easier.
+Show your full name on the GitHub account you use for work, so commits and PRs can be traced to
+a person. If you'd rather not show it on a personal profile, create a separate work account.
 
-If you're writing 'change this and that' in a commit message, it's a strong indication that you should break up the commit.
+## <a name="how-the-rules-are-checked"></a>How the rules are checked
 
-## <a name="dont-mix-refactoring-with-functional-changes">Don't mix refactoring with functional changes in the same commit</a>
+These checks are being rolled out. Follow the rules now; the checks will catch anything missed.
 
-It's hard to review commits that contain both refactoring (changes to the way code is expressed) and functional changes. Split them up so refactoring stands on its own.
+- **On every PR:** a `pr-guardrails` check will validate the branch name, target, title,
+  description, commit messages and branch history, and list anything to fix in the check's
+  summary. At first it only warns. Later, rule errors will block the merge.
+- **Regular audits:** recent PRs are reviewed against these rules. A PR that breaks one may get
+  a comment saying what to change. Fix the title and description in place. If the branch itself
+  is wrong, recreate it from `master` and raise a new PR.
 
-## <a name="atomic-commits">Make each commit atomic</a>
-
-Before a pull request merges, its commits should be self-contained (a.k.a. "atomic").
-
-This means that after each commit:
-
-- The test suite should pass;
-- The codebase could be safely deployed to production.
-
-So don't half-implement a feature in one commit then fix it in a later commit. Structure your pull requests so that each change keeps the codebase in a deployable state.
-
-Tip: if you want to write a failing test and then fix it in a later commit, you can keep the test suite passing by
-decorating the test with `pytest.mark.xfail`.
-
-## <a name="dont-surprise-with-urgent-prs">Try not to surprise reviewers with urgent, complex pull requests</a>
-
-If you have a time-sensitive pull request that you are preparing, engage with your intended reviewers ahead of time to
-let them know it's coming.
-
-Complex PRs can take a lot of time to review: if you need a fast turnaround, the more notice the better.
-
-## <a name="acknowledge-comments">Acknowledge every review comment</a>
-
-Always respond to every comment to indicate to the reviewer that you've seen and thought about what they said. This
-doesn't have to be onerous: often a 👍 reaction is sufficient.
-
-## <a name="make-clear-what-has-changed-since-last-review">When re-requesting reviews, make it clear what has changed</a>
-
-When re-requesting a review after some requested changes, make it clear to the reviewer what has changed since their
-last review. This helps them save time as they may not remember where they reviewed up to last time.
-
-There are a few approaches for doing this:
-
-### <a name="comment-and-rewrite-history">Approach A: comment and then rewrite history</a>
-
-One way to address changes is to amend previous commits.
-
-If you're doing this it can force the reviewer to look back and reread lots of code they have already reviewed, so help
-them out by communicating each change with a PR comment.
-
-### <a name="show-changes-using-additional-commits">Approach B: show changes using additional commits</a>
-
-Alternatively, you can make changes by adding commits on top of what you have already done, leaving the original commits
-in place. You can, if you like, use [fixup commits] to do this. If you do this, it's helpful also to let the reviewer know which commit to review from.
-
-Additional commits make changes clearer to the reviewer, but it has the downside of a messier commit history which will need to
-be tidied up before merge.
-
-Don't forget to squash the corrections together before merging, as per
-[Clean up mistakes by rewriting history](#clean-up-mistakes). You can add the _Fixup before merging_ label to your PR to
-remind yourself.
+Questions about a rule or a failing check: ask the repository owner or DevOps.
